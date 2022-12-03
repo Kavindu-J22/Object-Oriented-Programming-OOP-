@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Querys>
+	<!-- Query To create table Users-->
+	<query id="create_table_users">
+		 <![CDATA[
+          CREATE TABLE Users(
+			userID INT NOT NULL PRIMARY KEY IDENTITY (1,1),
+			userName VARCHAR (50) NOT NULL,
+			userEmail VARCHAR (50) NOT NULL,
+			userPassword VARCHAR (50) NOT NULL,
+			userRole VARCHAR(30) NOT NULL,
+			CONSTRAINT userType CHECK(userRole IN ('admin','customer'))
+			)
+        ]]>
+	</query>
+	
+	
+	<!-- DROP TABLE Users Query -->
+	<query id="drop_table_users">
+         <![CDATA[        
+           IF OBJECT_ID(N'dbo.Users', N'U') IS NOT NULL
+		   BEGIN
+	         DROP TABLE Users
+           END
+        ]]>
+	</query>
+
+	<!-- Query To create venue table-->
+	<query id="create_table_venue">
+		 <![CDATA[
+          CREATE TABLE venue(
+			venueID INTEGER NOT NULL IDENTITY(1,1),
+			venueName VARCHAR(30) NOT NULL,
+			chargeForEvent FLOAT NOT NULL,
+			address_ VARCHAR(50) NOT NULL,
+			contactNo char(10) NOT NULL,
+			capacity INTEGER NOT NULL,
+			PRIMARY KEY(venueID)
+		)
+        ]]>
+	</query>
+	
+	<!-- DROP TABLE venue Query -->
+	<query id="drop_table_venue">
+         <![CDATA[        
+           IF OBJECT_ID(N'dbo.venue', N'U') IS NOT NULL
+		   BEGIN
+	         DROP TABLE venue
+           END
+        ]]>
+	</query>
+	
+	<!-- Query To create venue Booking table-->
+	<query id="create_table_venueBooking">
+		 <![CDATA[
+          CREATE TABLE venueBooking(
+			venueID INTEGER,
+			bookedDate DATE NOT NULL,
+			CONSTRAINT venueForeign FOREIGN KEY (venueID) REFERENCES venue
+		  )
+        ]]>
+	</query>
+	
+	<!-- DROP TABLE venueBooking Query -->
+	<query id="drop_table_venueBooking">
+         <![CDATA[        
+           IF OBJECT_ID(N'dbo.venueBooking', N'U') IS NOT NULL
+		   BEGIN
+	         DROP TABLE venueBooking
+           END
+        ]]>
+	</query>
+	
+	
+	<!-- Query To create table serviceProvider-->
+	<query id="create_table_serviceProvider">
+		 <![CDATA[
+          CREATE TABLE serviceProvider (
+			serviceProviderID INTEGER NOT NULL PRIMARY KEY IDENTITY(1,1),
+			serviceProviderName VARCHAR(50) NOT NULL,
+			serviceType VARCHAR(50) NOT NULL,
+			serviceCharge DECIMAL NOT NULL,
+			address_ VARCHAR(50) NOT NULL,
+			contactNo CHAR(10) NOT NULL,
+		)
+        ]]>
+	</query>
+	
+	<!-- DROP TABLE Service Provider Query -->
+	<query id="drop_table_serviceProvider">
+         <![CDATA[        
+           IF OBJECT_ID(N'dbo.serviceProvider', N'U') IS NOT NULL
+		   BEGIN
+	         DROP TABLE serviceProvider
+           END
+        ]]>
+	</query>
+	
+	<!-- Query To create Booking table-->
+	<query id="create_table_Booking">
+		 <![CDATA[
+			CREATE TABLE Booking (
+				BookingID INT NOT NULL PRIMARY KEY IDENTITY (1,1),
+				EventName VARCHAR(50) NOT NULL,
+				EventType VARCHAR(50) NOT NULL,
+				EventDate DATE NOT NULL,
+				StartingTime TIME NOT NULL,
+				EndingTime TIME NOT NULL,
+				VenueID INT NOT NULL,
+				MealProviderID INT,
+				DecorationProviderID INT,
+				SoundAndLightingProviderID INT,
+				TotaLCost FLOAT NOT NULL,
+				userID INT NOT NULL,
+				NoOfParticipants INT NOT NULL,
+				BookingStatus VARCHAR(50) DEFAULT 'pending',
+				CONSTRAINT venueForeignBooking FOREIGN KEY(VenueID) REFERENCES venue,
+				CONSTRAINT mealProviderForeign FOREIGN KEY (MealProviderID) REFERENCES serviceProvider,
+				CONSTRAINT decorationProviderForeign FOREIGN KEY (DecorationProviderID) REFERENCES serviceProvider,
+				CONSTRAINT soundProviderForeign FOREIGN KEY (SoundAndLightingProviderID) REFERENCES serviceProvider,
+				CONSTRAINT statuscheck CHECK(BookingStatus IN('pending','approved','rejected'))
+			)
+        ]]>
+	</query>
+	
+	<!-- DROP TABLE Booking Query -->
+	<query id="drop_table_Booking">
+         <![CDATA[        
+           IF OBJECT_ID(N'dbo.Booking', N'U') IS NOT NULL
+		   BEGIN
+	         DROP TABLE Booking
+           END
+        ]]>
+	</query>
+	
+	<!-- Query To check availabe venues-->
+	<query id="check_availability">
+		 <![CDATA[
+           SELECT venueID,venueName FROM venue WHERE venue.capacity >= ? AND venueID NOT IN (SELECT venueID FROM venueBooking WHERE bookedDate = ?)
+        ]]>
+	</query>
+	
+	<!-- Query To get serviceProviders When service Type is given-->
+	<query id="get_service_provider">
+		 <![CDATA[
+          select serviceProviderID,serviceProviderName,serviceCharge from serviceProvider Where serviceType = ?
+        ]]>
+	</query>
+	
+	<!-- Query To get Venue Details-->
+	<query id="get_venue_details">
+		 <![CDATA[
+          select * from venue where venueID = ?
+        ]]>
+	</query>
+	
+	<!-- Query To get service Provider Details-->
+	<query id="get_service_providers">
+		 <![CDATA[
+          select * from serviceProvider where serviceProviderID = ?
+        ]]>
+	</query>
+	
+	<!-- Query To get details of users-->
+	<query id="get_users_details">
+		 <![CDATA[
+          select * from Users
+        ]]>
+	</query>
+	
+	<!-- Query To add a booking-->
+	<query id="add_booking">
+		 <![CDATA[
+          INSERT INTO Booking (EventName,EventType,EventDate,StartingTime,
+          EndingTime,VenueID,MealProviderID,DecorationProviderID,
+          SoundAndLightingProviderID,TotalCost,userID,NoOfParticipants,BookingStatus) Values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ]]>
+	</query>
+	
+	<!-- Query to get all bookings in the system-->
+	<query id="get_all_bookings">
+		 <![CDATA[
+          SELECT * FROM Booking
+        ]]>
+	</query>
+	
+	<!-- Query to get details of all bookings of particular user-->
+	<query id="get_booking">
+		 <![CDATA[
+          SELECT B.BookingID,B.EventName,B.EventType,B.EventDate,CAST(DATEPART(hour,B.StartingTime) as varchar) + 
+		  ':' + cast(DATEPART(minute,B.StartingTime) as varchar) as StartingTime,
+		CAST(DATEPART(hour,B.EndingTime) as varchar) + 
+		':' + cast(DATEPART(minute,B.EndingTime) as varchar) as EndingTime,
+		B.VenueID,B.MealProviderID,B.DecorationProviderID,B.SoundAndLightingProviderID,B.TotalCost,B.NoOfParticipants,B.BookingStatus
+		FROM Booking B 
+		WHERE B.userID = ?
+        ]]>
+	</query>
+	
+	<!-- Query To Delete booking details-->
+	<query id="delete_booking">
+		 <![CDATA[
+     		DELETE FROM Booking  
+			WHERE BookingID = ? AND userID = ?
+        ]]>
+	</query>
+	
+	<!-- Query to get specified booking details of particular user-->
+	<query id="get_booking_specified">
+		 <![CDATA[
+          SELECT B.BookingID,B.EventName,B.EventType,B.EventDate,CAST(DATEPART(hour,B.StartingTime) as varchar) + 
+		  ':' + cast(DATEPART(minute,B.StartingTime) as varchar) as StartingTime,
+		CAST(DATEPART(hour,B.EndingTime) as varchar) + 
+		':' + cast(DATEPART(minute,B.EndingTime) as varchar) as EndingTime,
+		B.VenueID,B.MealProviderID,B.DecorationProviderID,B.SoundAndLightingProviderID,B.TotalCost,B.NoOfParticipants,B.BookingStatus
+		FROM Booking B 
+		WHERE B.BookingID = ? AND B.userID = ?
+        ]]>
+	</query>
+	
+	<!-- Query to update specified booking details of particular user-->
+	<query id="update_booking_specified">
+		 <![CDATA[
+          UPDATE Booking SET EventName = ?,EventType = ?,EventDate = ?,StartingTime = ?,
+          EndingTime = ?,VenueID = ?,MealProviderID = ?,DecorationProviderID = ?,
+          SoundAndLightingProviderID = ?,TotalCost = ?,NoOfParticipants = ?
+		  WHERE BookingID = ? AND userID = ?
+        ]]>
+	</query>
+	
+	<!-- Query to update Booking Status when admin approved the Booking -->
+	<query id="approve_booking">
+		 <![CDATA[
+          UPDATE Booking SET BookingStatus = 'approved'
+		  WHERE BookingID = ? AND userID = ?
+        ]]>
+	</query>
+	
+	<!-- Query to update Booking Status when admin approved the Booking -->
+	<query id="reject_booking">
+		 <![CDATA[
+          UPDATE Booking SET BookingStatus = 'rejected'
+		  WHERE BookingID = ? AND userID = ?
+        ]]>
+	</query>
+	
+	<!--Query to Update VenueBookings-->
+	<query id="update_booked_venues">
+		 <![CDATA[
+          INSERT INTO venueBooking VALUES (?,?)
+        ]]>
+	</query>
+	
+	<!--Query to delete record from VenueBookings when customer deleted the booking-->
+	<query id="delete_booked_venues">
+		 <![CDATA[
+          DELETE venueBooking
+		  WHERE venueID = ? AND bookedDate = ?
+        ]]>
+	</query>
+</Querys>
