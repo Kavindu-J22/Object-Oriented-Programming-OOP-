@@ -1,0 +1,88 @@
+
+.copyright-bar p {
+    align-content: center;
+}
+
+.descp {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.6;
+    margin: 15px 0;
+    color: #01040B;
+}
+
+.descHeaderColor {
+    color: #51090C !important;
+    font-weight: 400;
+}
+
+.optionHeader {
+    color: #7E5F5F !important;
+    font-weight: 200;
+}
+
+
+.descriptionHeading {
+    font-weight: 700;
+}
+
+.headerStyle {
+    padding-top: 20px;
+}
+
+.content-2-1 h2 {
+    color: white;
+    font-weight: 1000;
+}
+
+.linkInsection3 {
+    font-weight: 500;
+    font-size: 25px;
+}
+
+#header-1 .main-nav {
+    background-color: black;
+}
+
+.headerBackground {
+    background: url('resources/images/header-3-bg.jpg') no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+.pad-bottom15 {
+    padding-bottom: 0px !important;
+}
+
+
+.bookingFormContainer {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#content-2-1 .card-header p{
+	color:#F4E256;
+}
+
+.featureSectionOption {
+	font-weight: 500;
+    font-size:30px;
+    color:#1F1300;
+}
+
+.featureSectionDesc {
+	font-size: 22px;
+    font-weight:400;
+    color:black;
+    text-shadow: 4px 4px 10px #F7934C;
+}
+
+.featureSectionHeading {
+	font-weight:500;
+}
